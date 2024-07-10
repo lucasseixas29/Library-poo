@@ -3,10 +3,14 @@ import java.util.List;
 public abstract class ItemAcervo{
     private String titulo;
     private int ano;
+    private boolean disponivel;
+    private int id;
 
-    public ItemAcervo(String titulo, int ano) {
+    public ItemAcervo(String titulo, int ano, boolean disponivel, int id) {
         this.titulo = titulo;
         this.ano = ano;
+        this.disponivel = true;
+        this.id = id;
     }
 
     public String getTitulo() {
@@ -23,5 +27,16 @@ public abstract class ItemAcervo{
 
     public void setAno(int ano) {
         this.ano = ano;
+    }
+    public boolean getIsDisponivel() {
+        return disponivel;
+    }
+
+    public void setIsDisponivel(boolean disponivel) {
+        this.disponivel = disponivel;
+    }
+
+    public int getId() {
+        return id;
     }
 }

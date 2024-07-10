@@ -7,7 +7,7 @@ public class Biblioteca {
     private List<Usuario> usuarios;
     private List<Livro> livros;
     private List<Revista> revistas;
-    private List<Livro> emprestimos;
+    private List<ItemAcervo> emprestimos;
 
     public Biblioteca(String nomeBiblioteca) {
         this.nomeBiblioteca = nomeBiblioteca;
@@ -33,11 +33,24 @@ public class Biblioteca {
         return revistas;
     }
 
-    public List<Livro> getEmprestimos() {
+    public List<ItemAcervo> getEmprestimos() {
         return emprestimos;
     }
 
     public void addLivroEmprestimos(Livro livro) {
         emprestimos.add(livro);
+    }
+
+    public boolean removeLivroEmprestimos(int id) {
+        return emprestimos.removeIf(x -> x.getId() == id);
+//        for (ItemAcervo l : emprestimos) {
+//            if (l.getId() == id) {
+//                emprestimos.remove(l);
+//            }
+//        }
+    }
+
+    public void addRevistaEmprestimos(Revista revista) {
+        emprestimos.add(revista);
     }
 }

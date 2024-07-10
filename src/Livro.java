@@ -1,30 +1,17 @@
 public class Livro extends ItemAcervo {
-    private int id;
     private String autor;
-    private boolean disponivel;
 
-    public Livro(String titulo, int ano, String autor, int id) {
-        super(titulo, ano);
+    public Livro(String titulo, int ano, boolean disponivel, int id, String autor) {
+        super(titulo, ano, disponivel, id);
         this.autor = autor;
-        this.id = id;
-        this.disponivel = true;
     }
 
-
     public int getId() {
-        return id;
+        return super.getId();
     }
 
     public String getAutor() {
         return autor;
-    }
-
-    public boolean getIsDisponivel() {
-        return disponivel;
-    }
-
-    public void setIsDisponivel(boolean disponivel) {
-        this.disponivel = disponivel;
     }
 
     @Override

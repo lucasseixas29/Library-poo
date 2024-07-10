@@ -1,11 +1,8 @@
 public class Revista extends ItemAcervo {
-    private int id;
     private int numeroEdicao;
 
-
-    public Revista(String titulo, int ano, int id, int numeroEdicao) {
-        super(titulo, ano);
-        this.id = id;
+    public Revista(String titulo, int ano, boolean disponivel, int id, int numeroEdicao) {
+        super(titulo, ano, disponivel, id);
         this.numeroEdicao = numeroEdicao;
     }
 
@@ -23,12 +20,14 @@ public class Revista extends ItemAcervo {
         return numeroEdicao;
     }
 
+    @Override
     public int getId() {
-        return id;
+        return super.getId();
     }
 
     @Override
     public String toString() {
-        return "Revista: " + getTitulo() + ", Ano: " + getAno() + ", ID: " + id + ", Número edição: " + numeroEdicao;
+        return "Revista: " + getTitulo() + ", Ano: " + getAno() + ", ID: "
+                + getId() + ", Número edição: " + numeroEdicao + ", status: " + (getIsDisponivel() ? "Disponível" : "Indisponível");
     }
 }

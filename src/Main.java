@@ -7,6 +7,7 @@ public class Main {
         Biblioteca biblioteca = new Biblioteca("Java para estudos.");
         Usuario usuario = null;
         Livro livro = null;
+        Revista revista = null;
 
         boolean flag = true;
         while (flag) {
@@ -18,6 +19,9 @@ public class Main {
             System.out.println("6 - Adicionar Revistas");
             System.out.println("7 - Ver todas as revistas");
             System.out.println("8 - Pegar um livro emprestado pelo ID");
+            System.out.println("9 - Pegar uma revista emprestada pelo ID");
+            System.out.println("10 - Devolver o livro pelo ID");
+            System.out.println("11 - Sair");
 
             int opcao = sc.nextInt();
             sc.nextLine();
@@ -83,7 +87,7 @@ public class Main {
                     System.out.println("Digite o autor do livro: ");
                     String autor = sc.nextLine();
 
-                    livro = new Livro(titulo, ano, autor, id);
+                    livro = new Livro(titulo, ano, true, id, autor);
                     biblioteca.getLivros().add(livro);
                     System.out.println(livro);
                     System.out.println("Livro Cadastrado.");
@@ -111,7 +115,7 @@ public class Main {
                     int numeroEdicao = sc.nextInt();
                     sc.nextLine();
 
-                    Revista revista = new Revista(titulo, ano, id, numeroEdicao);
+                    revista = new Revista(titulo, ano, true, id, numeroEdicao);
                     biblioteca.getRevistas().add(revista);
                     System.out.println(revista);
                     System.out.println("Revista Cadastrada.");
@@ -132,10 +136,17 @@ public class Main {
                         break;
                     }
                     System.out.println("Livros disponíveis: ");
+                    int livrosDisponiveis = 0;
                     for (Livro l : biblioteca.getLivros()) {
                         if (l.getIsDisponivel()) {
+                            livrosDisponiveis++;
                             System.out.println(l);
                         }
+                    }
+                    if (livrosDisponiveis == 0) {
+                        System.out.println("0");
+                        System.out.println();
+                        break;
                     }
                     System.out.println();
                     System.out.println("Digite o id do livro para empréstimo: ");
@@ -166,7 +177,7 @@ public class Main {
                         break;
                     }
 
-                    for (Livro l : biblioteca.getEmprestimos()) {
+                    for (ItemAcervo l : biblioteca.getEmprestimos()) {
                         if (l.getTitulo().equalsIgnoreCase(livroEscolhido) && !l.getIsDisponivel()) {
                             System.out.println("Livro indisponível para empréstimo, escolha outro por favor.");
                             break;
@@ -186,6 +197,102 @@ public class Main {
                         break;
                     }
                     break;
+                case 9:
+                    if (usuario == null) {
+                        System.out.println("Realize o cadastro para pegar um livro emprestado.");
+                        break;
+                    }
+                    System.out.println("Revistas disponíveis: ");
+                    int countRevistasDisponiveis = 0;
+                    for (Revista r : biblioteca.getRevistas()) {
+                        if (r.getIsDisponivel()) {
+                            countRevistasDisponiveis++;
+                            System.out.println(r);
+                        }
+                    }
+                    if (countRevistasDisponiveis == 0) {
+                        System.out.println('0');
+                        System.out.println();
+                        break;
+                    }
+                    System.out.println();
+                    System.out.println("Digite o id da revista para empréstimo: ");
+                    int idRevista = sc.nextInt();
+                    sc.nextLine();
+                    String revistaEscolhida = null;
+                    boolean revistaEncontrada = false;
+
+                    if (biblioteca.getRevistas().isEmpty()) {
+                        System.out.println("Não há revistas no momento.");
+                        break;
+                    }
+                    for (Revista r : biblioteca.getRevistas()) {
+                        if (r.getId() == idRevista) {
+                            revistaEscolhida = r.getTitulo();
+                            revistaEncontrada = true;
+                            break;
+                        }
+                    }
+                    if (!revistaEncontrada) {
+                        System.out.println("ID da revista não encontrada.");
+                        break;
+                    }
+                    if (usuario.getEmprestimos() >= 2) {
+                        System.out.println("Você não pode exceder o limite de 2 empréstimos.");
+                        System.out.println("Você já tem: " + usuario.getEmprestimos() + " empréstimos.");
+                        System.out.println();
+                        break;
+                    }
+
+                    for (ItemAcervo r : biblioteca.getEmprestimos()) {
+                        if (r.getTitulo().equalsIgnoreCase(revistaEscolhida) && !r.getIsDisponivel()) {
+                            System.out.println("Revista indisponível para empréstimo, escolha outra por favor.");
+                            break;
+                        }
+                    }
+
+                    if (revista != null) {
+                        for (Revista r : biblioteca.getRevistas()) {
+                            if (r.getId() == idRevista && r.getIsDisponivel()) {
+                                biblioteca.addRevistaEmprestimos(r);
+                                usuario.setEmprestimos(1);
+                                r.setIsDisponivel(false);
+                                System.out.println("Empréstimo da revista bem sucedido.");
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    break;
+                case 10:
+                    if (biblioteca.getEmprestimos().isEmpty() || usuario.getEmprestimos() == 0) {
+                        System.out.println("Não há livros para você devolver.");
+                        break;
+                    }
+                    System.out.println("Digite o id do livro que você quer devolver: ");
+                    int idLivroDevolvido = sc.nextInt();
+                    sc.nextLine();
+
+                    if (biblioteca.removeLivroEmprestimos(idLivroDevolvido)) {
+                        if (usuario != null && usuario.getEmprestimos() > 0) {
+                            usuario.setEmprestimos(-1);
+                        }
+                        for (ItemAcervo item : biblioteca.getLivros()) {
+                            if (item.getId() == idLivroDevolvido) {
+                                item.setIsDisponivel(true);
+                                break;
+                            }
+                        }
+                        System.out.println("Livro devolvido com sucesso.");
+                        break;
+                    } else {
+                        System.out.println("Você não pegou este livro emprestado.");
+                        break;
+                    }
+
+                case 11:
+                    System.out.println("Saindo...");
+                    flag = false;
             }
         }
     }
