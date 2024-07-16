@@ -1,3 +1,5 @@
+package entities;
+
 public class Livro extends ItemAcervo {
     private String autor;
 

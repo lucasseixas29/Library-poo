@@ -1,3 +1,6 @@
+import entities.*;
+
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -45,7 +48,6 @@ public class Main {
                     break;
 
                 case 2:
-                    boolean encontrado = false;
                     System.out.print("Digite sua matrícula: ");
                     matricula = sc.nextInt();
                     sc.nextLine();
@@ -53,14 +55,15 @@ public class Main {
                         System.out.println("Não há usuários.");
                         break;
                     }
-                    for (Usuario user : biblioteca.getUsuarios()) {
-                        if (matricula == user.getMatricula()) {
-                            encontrado = true;
-                            System.out.println(user);
-                            break;
-                        }
-                    }
-                    if (!encontrado) {
+
+                    Usuario usuarioEncontrado = biblioteca.getUsuarios().stream()
+                            .filter(x -> x.getMatricula().equals(matricula)).findFirst()
+                            .orElse(null);
+
+                    if (usuarioEncontrado != null) {
+                        System.out.println(usuarioEncontrado);
+                        break;
+                    } else {
                         System.out.println("Usuário com essa matrícula não encontrado.");
                     }
                     break;
@@ -72,10 +75,6 @@ public class Main {
                     }
 
                     for (Usuario user : biblioteca.getUsuarios()) {
-                        if (biblioteca.getUsuarios().isEmpty()) {
-                            System.out.println("Não há usuários.");
-                            break;
-                        }
                         System.out.println(user);
                     }
                     break;
@@ -85,10 +84,8 @@ public class Main {
                     String titulo = sc.nextLine();
                     System.out.print("Digite o ano do livro: ");
                     int ano = sc.nextInt();
-//                    System.out.print("Digite o ID do livro: ");
-//                    int id = sc.nextInt();
                     sc.nextLine();
-                    System.out.println("Digite o autor do livro: ");
+                    System.out.print("Digite o autor do livro: ");
                     String autor = sc.nextLine();
 
                     livro = new Livro(titulo, ano, true, COUNTERLIVRO.incrementAndGet(), autor);
@@ -112,10 +109,7 @@ public class Main {
                     System.out.print("Digite o ano da revista: ");
                     ano = sc.nextInt();
                     sc.nextLine();
-//                    System.out.print("Digite o ID da revista: ");
-//                    id = sc.nextInt();
-                    sc.nextLine();
-                    System.out.println("Digite o número da edição: ");
+                    System.out.print("Digite o número da edição: ");
                     int numeroEdicao = sc.nextInt();
                     sc.nextLine();
 
@@ -183,7 +177,7 @@ public class Main {
 
                     for (ItemAcervo l : biblioteca.getEmprestimos()) {
                         if (l.getTitulo().equalsIgnoreCase(livroEscolhido) && !l.getIsDisponivel()) {
-                            System.out.println("Livro indisponível para empréstimo, escolha outro por favor.");
+                            System.out.println("entities.Livro indisponível para empréstimo, escolha outro por favor.");
                             break;
                         }
                     }
@@ -250,7 +244,7 @@ public class Main {
 
                     for (ItemAcervo r : biblioteca.getEmprestimos()) {
                         if (r.getTitulo().equalsIgnoreCase(revistaEscolhida) && !r.getIsDisponivel()) {
-                            System.out.println("Revista indisponível para empréstimo, escolha outra por favor.");
+                            System.out.println("entities.Revista indisponível para empréstimo, escolha outra por favor.");
                             break;
                         }
                     }

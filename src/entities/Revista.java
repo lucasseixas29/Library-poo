@@ -1,3 +1,5 @@
+package entities;
+
 public class Revista extends ItemAcervo {
     private int numeroEdicao;
 
@@ -16,7 +18,7 @@ public class Revista extends ItemAcervo {
 
     @Override
     public String toString() {
-        return "Revista: " + getTitulo() + ", Ano: " + getAno() + ", ID: "
+        return "entities.Revista: " + getTitulo() + ", Ano: " + getAno() + ", ID: "
                 + getId() + ", Número edição: " + numeroEdicao + ", status: " + (getIsDisponivel() ? "Disponível" : "Indisponível");
     }
 }

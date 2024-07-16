@@ -1,3 +1,5 @@
+package entities;
+
 public abstract class ItemAcervo {
     private String titulo;
     private int ano;

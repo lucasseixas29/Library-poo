@@ -1,6 +1,8 @@
+package entities;
+
 public class Usuario {
     private String nome;
-    private int matricula;
+    private Integer matricula;
     private int emprestimos;
 
     public Usuario() {
@@ -20,7 +22,7 @@ public class Usuario {
         this.nome = nome;
     }
 
-    public int getMatricula() {
+    public Integer getMatricula() {
         return matricula;
     }
 
