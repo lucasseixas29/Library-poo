@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
     public static void main(String[] args) {
@@ -8,6 +9,10 @@ public class Main {
         Usuario usuario = null;
         Livro livro = null;
         Revista revista = null;
+
+        AtomicInteger COUNTERLIVRO = new AtomicInteger();
+        AtomicInteger COUNTERREVISTA = new AtomicInteger();
+
 
         boolean flag = true;
         while (flag) {
@@ -80,14 +85,13 @@ public class Main {
                     String titulo = sc.nextLine();
                     System.out.print("Digite o ano do livro: ");
                     int ano = sc.nextInt();
-                    sc.nextLine();
-                    System.out.print("Digite o ID do livro: ");
-                    int id = sc.nextInt();
+//                    System.out.print("Digite o ID do livro: ");
+//                    int id = sc.nextInt();
                     sc.nextLine();
                     System.out.println("Digite o autor do livro: ");
                     String autor = sc.nextLine();
 
-                    livro = new Livro(titulo, ano, true, id, autor);
+                    livro = new Livro(titulo, ano, true, COUNTERLIVRO.incrementAndGet(), autor);
                     biblioteca.getLivros().add(livro);
                     System.out.println(livro);
                     System.out.println("Livro Cadastrado.");
@@ -108,14 +112,14 @@ public class Main {
                     System.out.print("Digite o ano da revista: ");
                     ano = sc.nextInt();
                     sc.nextLine();
-                    System.out.print("Digite o ID da revista: ");
-                    id = sc.nextInt();
+//                    System.out.print("Digite o ID da revista: ");
+//                    id = sc.nextInt();
                     sc.nextLine();
                     System.out.println("Digite o número da edição: ");
                     int numeroEdicao = sc.nextInt();
                     sc.nextLine();
 
-                    revista = new Revista(titulo, ano, true, id, numeroEdicao);
+                    revista = new Revista(titulo, ano, true, COUNTERREVISTA.incrementAndGet(), numeroEdicao);
                     biblioteca.getRevistas().add(revista);
                     System.out.println(revista);
                     System.out.println("Revista Cadastrada.");

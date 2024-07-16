@@ -6,12 +6,13 @@ public class Livro extends ItemAcervo {
         this.autor = autor;
     }
 
-    public int getId() {
-        return super.getId();
-    }
 
     public String getAutor() {
         return autor;
+    }
+
+    public void setAutor(String autor) {
+        this.autor = autor;
     }
 
     @Override

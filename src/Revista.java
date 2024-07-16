@@ -6,23 +6,12 @@ public class Revista extends ItemAcervo {
         this.numeroEdicao = numeroEdicao;
     }
 
-    @Override
-    public int getAno() {
-        return super.getAno();
-    }
-
-    @Override
-    public String getTitulo() {
-        return super.getTitulo();
-    }
-
     public int getNumeroEdicao() {
         return numeroEdicao;
     }
 
-    @Override
-    public int getId() {
-        return super.getId();
+    public void setNumeroEdicao(int numeroEdicao) {
+        this.numeroEdicao = numeroEdicao;
     }
 
     @Override

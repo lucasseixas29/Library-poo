@@ -43,14 +43,13 @@ public class Biblioteca {
 
     public boolean removeLivroEmprestimos(int id) {
         return emprestimos.removeIf(x -> x.getId() == id);
-//        for (ItemAcervo l : emprestimos) {
-//            if (l.getId() == id) {
-//                emprestimos.remove(l);
-//            }
-//        }
     }
 
     public void addRevistaEmprestimos(Revista revista) {
         emprestimos.add(revista);
+    }
+
+    public void removeRevistaEmprestimos(int id) {
+
     }
 }

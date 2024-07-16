@@ -1,6 +1,4 @@
-import java.util.List;
-
-public abstract class ItemAcervo{
+public abstract class ItemAcervo {
     private String titulo;
     private int ano;
     private boolean disponivel;
@@ -17,17 +15,18 @@ public abstract class ItemAcervo{
         return titulo;
     }
 
-    public int getAno() {
-        return ano;
-    }
-
     public void setTitulo(String titulo) {
         this.titulo = titulo;
+    }
+
+    public int getAno() {
+        return ano;
     }
 
     public void setAno(int ano) {
         this.ano = ano;
     }
+
     public boolean getIsDisponivel() {
         return disponivel;
     }

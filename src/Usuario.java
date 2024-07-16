@@ -12,14 +12,6 @@ public class Usuario {
         this.matricula = matricula;
     }
 
-    public void emprestarItem() {
-
-    }
-
-    public void devolverItem() {
-
-    }
-
     public String getNome() {
         return nome;
     }
@@ -42,10 +34,6 @@ public class Usuario {
 
     public void setEmprestimos(int emprestimos) {
         this.emprestimos += emprestimos;
-    }
-
-    public void consultarEmprestimos() {
-
     }
 
     @Override
