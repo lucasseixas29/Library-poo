@@ -4,7 +4,6 @@
 
 ### Conceitos utilizados:
 - Classe abstrata
-- Interface
 - Herança
 - Encapsulamento
 - Polimorfismo
