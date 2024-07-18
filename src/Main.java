@@ -1,20 +1,27 @@
+import Repository.LivroRepository;
+import Repository.RevistaRepository;
+import Repository.UsuarioRepository;
 import entities.*;
+import services.EmprestimoService;
+import services.LivroService;
+import services.RevistaService;
+import services.UsuarioService;
 
-import java.util.Optional;
 import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         Scanner sc = new Scanner(System.in);
-        Biblioteca biblioteca = new Biblioteca("Java para estudos.");
-        Usuario usuario = null;
-        Livro livro = null;
-        Revista revista = null;
+        UsuarioRepository usuarioRepository = new UsuarioRepository();
+        UsuarioService usuarioService = new UsuarioService(usuarioRepository);
+        LivroRepository livroRepository = new LivroRepository();
+        LivroService livroService = new LivroService(livroRepository);
+        RevistaRepository revistaRepository = new RevistaRepository();
+        RevistaService revistaService = new RevistaService(revistaRepository);
 
-        AtomicInteger COUNTERLIVRO = new AtomicInteger();
-        AtomicInteger COUNTERREVISTA = new AtomicInteger();
+        Biblioteca biblioteca = new Biblioteca("Biblioteca Java", livroService, revistaService);
+        EmprestimoService emprestimoService = new EmprestimoService(biblioteca);
 
 
         boolean flag = true;
@@ -29,7 +36,8 @@ public class Main {
             System.out.println("8 - Pegar um livro emprestado pelo ID");
             System.out.println("9 - Pegar uma revista emprestada pelo ID");
             System.out.println("10 - Devolver o livro pelo ID");
-            System.out.println("11 - Sair");
+            System.out.println("11 - Devolver a revista pelo ID");
+            System.out.println("12 - Sair");
 
             int opcao = sc.nextInt();
             sc.nextLine();
@@ -41,42 +49,26 @@ public class Main {
                     System.out.print("Digie a sua matrícula: ");
                     int matricula = sc.nextInt();
                     sc.nextLine();
-                    usuario = new Usuario(nome, matricula);
-                    biblioteca.getUsuarios().add(usuario);
+
+                    Usuario usuario = usuarioService.cadastrarUsuario(nome, matricula);
                     System.out.println("Usuário: " + usuario.getNome() + ", Matrícula: " + usuario.getMatricula());
                     System.out.println("Usuário cadastrado!");
+
                     break;
-
                 case 2:
-                    System.out.print("Digite sua matrícula: ");
-                    matricula = sc.nextInt();
-                    sc.nextLine();
-                    if (biblioteca.getUsuarios().isEmpty()) {
-                        System.out.println("Não há usuários.");
-                        break;
-                    }
+                    try {
+                        System.out.print("Digite sua matrícula: ");
+                        matricula = sc.nextInt();
+                        sc.nextLine();
 
-                    Usuario usuarioEncontrado = biblioteca.getUsuarios().stream()
-                            .filter(x -> x.getMatricula().equals(matricula)).findFirst()
-                            .orElse(null);
-
-                    if (usuarioEncontrado != null) {
-                        System.out.println(usuarioEncontrado);
-                        break;
-                    } else {
-                        System.out.println("Usuário com essa matrícula não encontrado.");
+                        System.out.println(usuarioService.buscarUsuarioPorMatricula(matricula));
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
                     }
                     break;
 
                 case 3:
-                    if (biblioteca.getUsuarios().isEmpty()) {
-                        System.out.println("Não há usuários.");
-                        break;
-                    }
-
-                    for (Usuario user : biblioteca.getUsuarios()) {
-                        System.out.println(user);
-                    }
+                    usuarioService.listarTodosUsuarios();
                     break;
                 case 4:
                     System.out.println("Adicione um livro: ");
@@ -88,19 +80,18 @@ public class Main {
                     System.out.print("Digite o autor do livro: ");
                     String autor = sc.nextLine();
 
-                    livro = new Livro(titulo, ano, true, COUNTERLIVRO.incrementAndGet(), autor);
-                    biblioteca.getLivros().add(livro);
+                    Livro livro = livroService.cadastrarLivro(titulo, ano, autor);
+
                     System.out.println(livro);
                     System.out.println("Livro Cadastrado.");
                     break;
                 case 5:
-                    if (biblioteca.getLivros().isEmpty()) {
-                        System.out.println("Sem livros na biblioteca.");
-                        break;
+                    if (livroService.listarTodosLivros() != null) {
+                        for (Livro l : livroService.listarTodosLivros()) {
+                            System.out.println(l);
+                        }
                     }
-                    for (Livro lvr : biblioteca.getLivros()) {
-                        System.out.println(lvr);
-                    }
+
                     break;
                 case 6:
                     System.out.println("Adicione uma Revista: ");
@@ -113,182 +104,220 @@ public class Main {
                     int numeroEdicao = sc.nextInt();
                     sc.nextLine();
 
-                    revista = new Revista(titulo, ano, true, COUNTERREVISTA.incrementAndGet(), numeroEdicao);
-                    biblioteca.getRevistas().add(revista);
+                    Revista revista = revistaService.cadastrarRevista(titulo, ano, numeroEdicao);
                     System.out.println(revista);
                     System.out.println("Revista Cadastrada.");
                     break;
-
                 case 7:
-                    if (biblioteca.getRevistas().isEmpty()) {
-                        System.out.println("Não há revistas.");
-                        break;
-                    }
-                    for (Revista rvt : biblioteca.getRevistas()) {
-                        System.out.println(rvt);
+                    if (revistaService.listarTodasRevistas() != null) {
+                        for (Revista r : revistaService.listarTodasRevistas()) {
+                            System.out.println(r);
+                        }
                     }
                     break;
                 case 8:
-                    if (usuario == null) {
-                        System.out.println("Realize o cadastro para pegar um livro emprestado.");
-                        break;
-                    }
-                    System.out.println("Livros disponíveis: ");
-                    int livrosDisponiveis = 0;
-                    for (Livro l : biblioteca.getLivros()) {
-                        if (l.getIsDisponivel()) {
-                            livrosDisponiveis++;
-                            System.out.println(l);
-                        }
-                    }
-                    if (livrosDisponiveis == 0) {
-                        System.out.println("0");
-                        System.out.println();
-                        break;
-                    }
-                    System.out.println();
-                    System.out.println("Digite o id do livro para empréstimo: ");
-                    int idLivro = sc.nextInt();
-                    sc.nextLine();
-                    String livroEscolhido = null;
-                    boolean livroEncontrado = false;
+                    try {
+                        System.out.print("Digite a matricula do seu usuário: ");
+                        matricula = sc.nextInt();
+                        sc.nextLine();
+                        int livrosDisponiveis = 0;
+                        usuario = usuarioService.buscarUsuarioPorMatricula(matricula);
+                        if (usuario != null) {
+                            System.out.println("Livros disponíveis: ");
 
-                    if (biblioteca.getLivros().isEmpty()) {
-                        System.out.println("Não há livros no momento.");
-                        break;
-                    }
-                    for (Livro l : biblioteca.getLivros()) {
-                        if (l.getId() == idLivro) {
-                            livroEscolhido = l.getTitulo();
-                            livroEncontrado = true;
+                            for (Livro l : livroService.listarLivrosDisponiveis()) {
+                                if (l.getIsDisponivel()) {
+                                    livrosDisponiveis++;
+                                    System.out.println(l);
+                                }
+                            }
+                            if (livrosDisponiveis == 0) {
+                                System.out.println("0");
+                                System.out.println();
+                                break;
+                            }
+
+                        }
+                        System.out.println();
+                        System.out.println("Digite o id do livro para empréstimo: ");
+                        int idLivro = sc.nextInt();
+                        sc.nextLine();
+                        String livroEscolhido = null;
+                        boolean livroEncontrado = false;
+
+                        for (Livro l : livroService.listarTodosLivros()) {
+                            if (l.getId() == idLivro) {
+                                livroEscolhido = l.getTitulo();
+                                livroEncontrado = true;
+                                break;
+                            }
+                        }
+                        if (!livroEncontrado) {
+                            System.out.println("Id do livro não encontrado.");
                             break;
                         }
-                    }
-                    if (!livroEncontrado) {
-                        System.out.println("ID do livro não encontrado.");
-                        break;
-                    }
-                    if (usuario.getEmprestimos() >= 2) {
-                        System.out.println("Você não pode exceder o limite de 2 livros emprestados.");
-                        System.out.println("Você já tem: " + usuario.getEmprestimos() + " livros.");
-                        System.out.println();
-                        break;
-                    }
-
-                    for (ItemAcervo l : biblioteca.getEmprestimos()) {
-                        if (l.getTitulo().equalsIgnoreCase(livroEscolhido) && !l.getIsDisponivel()) {
-                            System.out.println("entities.Livro indisponível para empréstimo, escolha outro por favor.");
+                        if (usuario.getEmprestimos() >= 2) {
+                            System.out.println("Você não pode exceder o limite de 2 livros emprestados.");
+                            System.out.println("Você já tem: " + usuario.getEmprestimos() + " livros.");
+                            System.out.println();
                             break;
                         }
-                    }
 
-                    if (livro != null) {
-                        for (Livro l : biblioteca.getLivros()) {
-                            if (l.getId() == idLivro && l.getIsDisponivel()) {
-                                biblioteca.addLivroEmprestimos(l);
+                        for (ItemAcervo l : emprestimoService.listarEmprestimos()) {
+                            if (l.getTitulo().equalsIgnoreCase(livroEscolhido) && !l.getIsDisponivel()) {
+                                System.out.println("Livro indisponível para empréstimo, escolha outro por favor.");
+                                break;
+                            }
+                        }
+                        livro = livroService.buscarLivroPorId(idLivro);
+                        if (livro != null) {
+                            if (livro.getIsDisponivel()) {
+                                emprestimoService.adicionarLivroEmprestimo(livro.getId());
                                 usuario.setEmprestimos(1);
-                                l.setIsDisponivel(false);
+                                livro.setIsDisponivel(false);
                                 System.out.println("Empréstimo do livro bem sucedido.");
                                 break;
                             }
                         }
                         break;
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
                     }
-                    break;
                 case 9:
-                    if (usuario == null) {
-                        System.out.println("Realize o cadastro para pegar um livro emprestado.");
-                        break;
-                    }
-                    System.out.println("Revistas disponíveis: ");
-                    int countRevistasDisponiveis = 0;
-                    for (Revista r : biblioteca.getRevistas()) {
-                        if (r.getIsDisponivel()) {
-                            countRevistasDisponiveis++;
-                            System.out.println(r);
-                        }
-                    }
-                    if (countRevistasDisponiveis == 0) {
-                        System.out.println('0');
-                        System.out.println();
-                        break;
-                    }
-                    System.out.println();
-                    System.out.println("Digite o id da revista para empréstimo: ");
-                    int idRevista = sc.nextInt();
-                    sc.nextLine();
-                    String revistaEscolhida = null;
-                    boolean revistaEncontrada = false;
+                    try {
+                        System.out.print("Digite a sua matrícula: ");
+                        matricula = sc.nextInt();
+                        sc.nextLine();
+                        usuario = usuarioService.buscarUsuarioPorMatricula(matricula);
+                        int revistaDisponiveis = 0;
+                        if (usuario != null) {
 
-                    if (biblioteca.getRevistas().isEmpty()) {
-                        System.out.println("Não há revistas no momento.");
-                        break;
-                    }
-                    for (Revista r : biblioteca.getRevistas()) {
-                        if (r.getId() == idRevista) {
-                            revistaEscolhida = r.getTitulo();
-                            revistaEncontrada = true;
-                            break;
-                        }
-                    }
-                    if (!revistaEncontrada) {
-                        System.out.println("ID da revista não encontrada.");
-                        break;
-                    }
-                    if (usuario.getEmprestimos() >= 2) {
-                        System.out.println("Você não pode exceder o limite de 2 empréstimos.");
-                        System.out.println("Você já tem: " + usuario.getEmprestimos() + " empréstimos.");
-                        System.out.println();
-                        break;
-                    }
-
-                    for (ItemAcervo r : biblioteca.getEmprestimos()) {
-                        if (r.getTitulo().equalsIgnoreCase(revistaEscolhida) && !r.getIsDisponivel()) {
-                            System.out.println("entities.Revista indisponível para empréstimo, escolha outra por favor.");
-                            break;
-                        }
-                    }
-
-                    if (revista != null) {
-                        for (Revista r : biblioteca.getRevistas()) {
-                            if (r.getId() == idRevista && r.getIsDisponivel()) {
-                                biblioteca.addRevistaEmprestimos(r);
-                                usuario.setEmprestimos(1);
-                                r.setIsDisponivel(false);
-                                System.out.println("Empréstimo da revista bem sucedido.");
+                            System.out.println("Revistas disponíveis: ");
+                            for (Revista r : revistaService.listarTodasRevistas()) {
+                                if (r.getIsDisponivel()) {
+                                    revistaDisponiveis++;
+                                    System.out.println(r);
+                                }
+                            }
+                            if (revistaDisponiveis == 0) {
+                                System.out.println('0');
+                                System.out.println();
                                 break;
                             }
+                            System.out.println();
+                            System.out.println("Digite o id da revista para empréstimo: ");
+                            int idRevista = sc.nextInt();
+                            sc.nextLine();
+                            String revistaEscolhida = null;
+                            boolean revistaEncontrada = false;
+                            if (revistaService.listarTodasRevistas().isEmpty()) {
+                                System.out.println("Não há revistas no momento.");
+                                break;
+                            }
+                            for (Revista r : revistaService.listarTodasRevistas()) {
+                                if (r.getId() == idRevista) {
+                                    revistaEscolhida = r.getTitulo();
+                                    revistaEncontrada = true;
+                                    break;
+                                }
+                            }
+                            if (!revistaEncontrada) {
+                                System.out.println("ID da revista não encontrada.");
+                                break;
+                            }
+                            if (usuario.getEmprestimos() >= 2) {
+                                System.out.println("Você não pode exceder o limite de 2 empréstimos.");
+                                System.out.println("Você já tem: " + usuario.getEmprestimos() + " empréstimos.");
+                                System.out.println();
+                                break;
+                            }
+
+                            for (ItemAcervo r : emprestimoService.listarEmprestimos()) {
+                                if (r.getTitulo().equalsIgnoreCase(revistaEscolhida) && !r.getIsDisponivel()) {
+                                    System.out.println("Revista indisponível para empréstimo, escolha outra por favor.");
+                                    break;
+                                }
+                            }
+                            revista = revistaService.buscarRevistaPorId(idRevista);
+                            if (revista != null) {
+                                if (revista.getIsDisponivel()) {
+                                    emprestimoService.adicionarRevistaEmprestimo(revista.getId());
+                                    usuario.setEmprestimos(1);
+                                    revista.setIsDisponivel(false);
+                                    System.out.println("Empréstimo da revista bem sucedido.");
+                                    break;
+                                }
+                            }
+                            break;
                         }
-                        break;
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
                     }
                     break;
+
                 case 10:
-                    if (biblioteca.getEmprestimos().isEmpty() || usuario.getEmprestimos() == 0) {
-                        System.out.println("Não há livros para você devolver.");
-                        break;
-                    }
-                    System.out.println("Digite o id do livro que você quer devolver: ");
-                    int idLivroDevolvido = sc.nextInt();
-                    sc.nextLine();
+                    try {
+                        System.out.print("Digite sua matrícula: ");
+                        matricula = sc.nextInt();
+                        sc.nextLine();
+                        usuario = usuarioService.buscarUsuarioPorMatricula(matricula);
 
-                    if (biblioteca.removeLivroEmprestimos(idLivroDevolvido)) {
-                        if (usuario != null && usuario.getEmprestimos() > 0) {
-                            usuario.setEmprestimos(-1);
+                        if (emprestimoService.listarEmprestimos().isEmpty() || usuario.getEmprestimos() == 0) {
+                            System.out.println("Não há livros para você devolver.");
+                            break;
                         }
-                        for (ItemAcervo item : biblioteca.getLivros()) {
-                            if (item.getId() == idLivroDevolvido) {
-                                item.setIsDisponivel(true);
-                                break;
+                        System.out.println("Digite o id do livro que você quer devolver: ");
+                        int idLivroDevolvido = sc.nextInt();
+                        sc.nextLine();
+
+                        if (emprestimoService.removerLivroEmprestimo(idLivroDevolvido)) {
+                            if (usuario != null && usuario.getEmprestimos() > 0) {
+                                usuario.setEmprestimos(-1);
                             }
+                            livro = livroService.buscarLivroPorId(idLivroDevolvido);
+                            livro.setIsDisponivel(true);
+                            System.out.println("Livro devolvido com sucesso.");
+                            break;
+                        } else {
+                            System.out.println("Você não pegou este livro emprestado.");
+                            break;
                         }
-                        System.out.println("Livro devolvido com sucesso.");
-                        break;
-                    } else {
-                        System.out.println("Você não pegou este livro emprestado.");
-                        break;
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
                     }
-
+                    break;
                 case 11:
+                    try {
+                        System.out.print("Digite sua matrícula: ");
+                        matricula = sc.nextInt();
+                        sc.nextLine();
+                        usuario = usuarioService.buscarUsuarioPorMatricula(matricula);
+
+                        if (emprestimoService.listarEmprestimos().isEmpty() || usuario.getEmprestimos() == 0) {
+                            System.out.println("Não há revistas para você devolver.");
+                            break;
+                        }
+                        System.out.println("Digite o id da revista que você quer devolver: ");
+                        int idRevistaDevolvida = sc.nextInt();
+                        sc.nextLine();
+
+                        if (emprestimoService.removerRevistaEmprestimo(idRevistaDevolvida)) {
+                            if (usuario != null && usuario.getEmprestimos() > 0) {
+                                usuario.setEmprestimos(-1);
+                            }
+                            revista = revistaService.buscarRevistaPorId(idRevistaDevolvida);
+                            revista.setIsDisponivel(true);
+                            System.out.println("Revista devolvida com sucesso.");
+                            break;
+                        } else {
+                            System.out.println("Você não pegou esta revista emprestada.");
+                            break;
+                        }
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                    break;
+                case 12:
                     System.out.println("Saindo...");
                     flag = false;
             }

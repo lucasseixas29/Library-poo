@@ -1,57 +1,52 @@
 package entities;
 
+import services.LivroService;
+import services.RevistaService;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Biblioteca {
     private String nomeBiblioteca;
+    private LivroService livroService;
+    private RevistaService revistaService;
 
-    private List<Usuario> usuarios;
-    private List<Livro> livros;
-    private List<Revista> revistas;
     private List<ItemAcervo> emprestimos;
 
-    public Biblioteca(String nomeBiblioteca) {
+    public Biblioteca(String nomeBiblioteca, LivroService livroService, RevistaService revistaService) {
         this.nomeBiblioteca = nomeBiblioteca;
-        this.usuarios = new ArrayList<>();
-        this.livros = new ArrayList<>();
-        this.revistas = new ArrayList<>();
         this.emprestimos = new ArrayList<>();
+        this.livroService = livroService;
+        this.revistaService = revistaService;
     }
 
     public String getNomeBiblioteca() {
         return nomeBiblioteca;
     }
 
-    public List<Usuario> getUsuarios() {
-        return usuarios;
-    }
-
-    public List<Livro> getLivros() {
-        return livros;
-    }
-
-    public List<Revista> getRevistas() {
-        return revistas;
-    }
-
     public List<ItemAcervo> getEmprestimos() {
         return emprestimos;
     }
 
-    public void addLivroEmprestimos(Livro livro) {
-        emprestimos.add(livro);
+    public void addLivroEmprestimos(int idLivro) throws Exception {
+        Livro livro = livroService.buscarLivroPorId(idLivro);
+        if (livro != null) {
+            emprestimos.add(livro);
+        }
     }
 
     public boolean removeLivroEmprestimos(int id) {
         return emprestimos.removeIf(x -> x.getId() == id);
     }
 
-    public void addRevistaEmprestimos(Revista revista) {
-        emprestimos.add(revista);
+    public void addRevistaEmprestimos(int idRevista) throws Exception {
+        Revista revista = revistaService.buscarRevistaPorId(idRevista);
+        if (revista != null) {
+            emprestimos.add(revista);
+        }
     }
 
-    public void removeRevistaEmprestimos(int id) {
-
+    public boolean removeRevistaEmprestimos(int id) {
+        return emprestimos.removeIf(x -> x.getId() == id);
     }
 }

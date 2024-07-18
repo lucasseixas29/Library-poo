@@ -8,7 +8,6 @@ public class Livro extends ItemAcervo {
         this.autor = autor;
     }
 
-
     public String getAutor() {
         return autor;
     }
